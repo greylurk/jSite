@@ -45,6 +45,7 @@ task fatJar(type: Jar) {
 jacoco {
     toolVersion = '0.8.8'
 }
-
 jacocoTestReport.dependsOn test
 
+compileJava.options.encoding = 'UTF-8'
+compileTestJava.options.encoding = 'UTF-8'

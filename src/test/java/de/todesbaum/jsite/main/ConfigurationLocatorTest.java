@@ -1,21 +1,19 @@
 package de.todesbaum.jsite.main;
 
-import static de.todesbaum.jsite.main.ConfigurationLocator.ConfigurationLocation.CUSTOM;
-import static de.todesbaum.jsite.main.ConfigurationLocator.ConfigurationLocation.HOME_DIRECTORY;
-import static de.todesbaum.jsite.main.ConfigurationLocator.ConfigurationLocation.NEXT_TO_JAR_FILE;
+import java.io.File;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.io.File;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import static de.todesbaum.jsite.main.ConfigurationLocator.ConfigurationLocation.*;
 
 /**
  * Unit test for {@link ConfigurationLocator}.
@@ -31,7 +29,7 @@ public class ConfigurationLocatorTest {
 		when(jarFileLocator.locateJarFile()).thenReturn(empty());
 		ConfigurationLocator locator = new ConfigurationLocator(jarFileLocator);
 		assertThat(locator.findPreferredLocation(), is(HOME_DIRECTORY));
-		assertThat(locator.getFile(HOME_DIRECTORY), endsWith("/config7"));
+		assertThat(locator.getFile(HOME_DIRECTORY), endsWith("config7"));
 		assertThat(locator.isValidLocation(HOME_DIRECTORY), is(true));
 	}
 
@@ -43,7 +41,7 @@ public class ConfigurationLocatorTest {
 		when(jarFileLocator.locateJarFile()).thenReturn(of(jarFile));
 		ConfigurationLocator locator = new ConfigurationLocator(jarFileLocator);
 		assertThat(locator.findPreferredLocation(), is(NEXT_TO_JAR_FILE));
-		assertThat(locator.getFile(NEXT_TO_JAR_FILE), endsWith("/jSite.conf"));
+		assertThat(locator.getFile(NEXT_TO_JAR_FILE), endsWith("jSite.conf"));
 		assertThat(locator.isValidLocation(NEXT_TO_JAR_FILE), is(true));
 	}
 
