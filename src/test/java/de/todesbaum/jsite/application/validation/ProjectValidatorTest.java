@@ -1,20 +1,16 @@
 package de.todesbaum.jsite.application.validation;
 
-import static de.todesbaum.jsite.application.validation.ProjectValidator.validateProject;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.not;
-
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 
-import de.todesbaum.jsite.application.Project;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import org.junit.*;
 import org.junit.rules.TemporaryFolder;
+
+import de.todesbaum.jsite.application.Project;
+import static de.todesbaum.jsite.application.validation.ProjectValidator.validateProject;
 
 /**
  * Unit test for {@link ProjectValidator}.
@@ -26,7 +22,7 @@ public class ProjectValidatorTest {
 	@Rule
 	public final TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-	private Project project = new Project();
+	private final Project project = new Project();
 
 	@Before
 	public void setupProject() throws Exception {

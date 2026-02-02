@@ -96,7 +96,7 @@ public class ProjectFilesPage extends TWizardPage implements ActionListener, Lis
 	private JCheckBox ignoreHiddenFilesCheckBox;
 
 	/** The list of project files. */
-	private JList projectFileList;
+	private JList<ScannedFile> projectFileList;
 
 	/** The “default file” checkbox. */
 	private JCheckBox defaultFileCheckBox;
@@ -120,7 +120,7 @@ public class ProjectFilesPage extends TWizardPage implements ActionListener, Lis
 	private JTextField fileOptionsRenameTextField;
 
 	/** The “mime type” combo box. */
-	private JComboBox fileOptionsMIMETypeComboBox;
+	private JComboBox<String> fileOptionsMIMETypeComboBox;
 
 	/** Delayed notification for file scanning. */
 	private StoppableDelay delayedNotification;
@@ -202,7 +202,7 @@ public class ProjectFilesPage extends TWizardPage implements ActionListener, Lis
 	private JComponent createProjectFilesPanel() {
 		JPanel projectFilesPanel = new JPanel(new BorderLayout(12, 12));
 
-		projectFileList = new JList();
+		projectFileList = new JList<>();
 		projectFileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		projectFileList.setMinimumSize(new Dimension(250, projectFileList.getPreferredSize().height));
 		projectFileList.addListSelectionListener(this);
@@ -288,7 +288,7 @@ public class ProjectFilesPage extends TWizardPage implements ActionListener, Lis
 		fileOptionsPanel.add(fileOptionsRenameCheckBox, new GridBagConstraints(0, 8, 2, 1, 0.0, 0.0, GridBagConstraints.LINE_START, GridBagConstraints.NONE, new Insets(6, 18, 0, 0), 0, 0));
 		fileOptionsPanel.add(fileOptionsRenameTextField, new GridBagConstraints(2, 8, 3, 1, 1.0, 0.0, GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL, new Insets(6, 6, 0, 0), 0, 0));
 
-		fileOptionsMIMETypeComboBox = new JComboBox(MimeTypes.getAllMimeTypes().toArray());
+		fileOptionsMIMETypeComboBox = new JComboBox<>(MimeTypes.getAllMimeTypes().toArray(new String[0]));
 		fileOptionsMIMETypeComboBox.setToolTipText(I18n.getMessage("jsite.project-files.mime-type.tooltip"));
 		fileOptionsMIMETypeComboBox.setName("project-files.mime-type");
 		fileOptionsMIMETypeComboBox.addActionListener(this);
@@ -394,7 +394,7 @@ public class ProjectFilesPage extends TWizardPage implements ActionListener, Lis
 	 */
 	private void actionScan() {
 		projectFileList.clearSelection();
-		projectFileList.setListData(new Object[0]);
+		projectFileList.setListData(new ScannedFile[0]);
 
 		wizard.setNextEnabled(false);
 		wizard.setPreviousEnabled(false);
@@ -451,12 +451,12 @@ public class ProjectFilesPage extends TWizardPage implements ActionListener, Lis
 				@Override
 				@SuppressWarnings("synthetic-access")
 				public void run() {
-					projectFileList.setListData(files.toArray());
+					projectFileList.setListData(files.toArray(new ScannedFile[0]));
 					projectFileList.clearSelection();
 				}
 			});
-			Set<String> entriesToRemove = new HashSet<String>();
-			Iterator<String> filenames = new HashSet<String>(project.getFileOptions().keySet()).iterator();
+			Set<String> entriesToRemove = new HashSet<>();
+			Iterator<String> filenames = new HashSet<>(project.getFileOptions().keySet()).iterator();
 			while (filenames.hasNext()) {
 				String filename = filenames.next();
 				boolean found = false;
@@ -555,7 +555,7 @@ public class ProjectFilesPage extends TWizardPage implements ActionListener, Lis
 				fileOption.setChangedName(isRenamed ? fileOptionsRenameTextField.getText() : "");
 			}
 		} else if (source instanceof JComboBox) {
-			JComboBox comboBox = (JComboBox) source;
+			JComboBox<?> comboBox = (JComboBox<?>) source;
 			if ("project-files.mime-type".equals(comboBox.getName())) {
 				updateMimeType((String) comboBox.getSelectedItem());
 			}

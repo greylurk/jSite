@@ -20,7 +20,6 @@ package de.todesbaum.util.swing;
 
 import java.awt.Component;
 
-import javax.swing.Icon;
 import javax.swing.JLabel;
 
 /**

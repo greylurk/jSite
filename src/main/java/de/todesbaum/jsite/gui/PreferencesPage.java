@@ -109,7 +109,7 @@ public class PreferencesPage extends TWizardPage {
 	private JCheckBox useEarlyEncodeCheckBox;
 
 	/** The insert priority select box. */
-	private JComboBox insertPriorityComboBox;
+	private JComboBox<PriorityClass> insertPriorityComboBox;
 
 	/**
 	 * Creates a new “preferences” page.
@@ -439,7 +439,7 @@ public class PreferencesPage extends TWizardPage {
 		final JLabel insertPriorityLabel = new JLabel(I18n.getMessage("jsite.preferences.insert-options.priority"));
 		preferencesPanel.add(insertPriorityLabel, new GridBagConstraints(0, 9, 1, 1, 0.0, 0.0, GridBagConstraints.LINE_START, GridBagConstraints.NONE, new Insets(6, 18, 0, 0), 0, 0));
 
-		insertPriorityComboBox = new JComboBox(new PriorityClass[] { PriorityClass.MINIMUM, PriorityClass.PREFETCH, PriorityClass.BULK, PriorityClass.UPDATABLE, PriorityClass.SEMI_INTERACTIVE, PriorityClass.INTERACTIVE, PriorityClass.MAXIMUM });
+		insertPriorityComboBox = new JComboBox<>(new PriorityClass[] { PriorityClass.MINIMUM, PriorityClass.PREFETCH, PriorityClass.BULK, PriorityClass.UPDATABLE, PriorityClass.SEMI_INTERACTIVE, PriorityClass.INTERACTIVE, PriorityClass.MAXIMUM });
 		insertPriorityComboBox.setAction(priorityAction);
 		preferencesPanel.add(insertPriorityComboBox, new GridBagConstraints(1, 9, 2, 1, 1.0, 0.0, GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL, new Insets(0, 18, 0, 0), 0, 0));
 

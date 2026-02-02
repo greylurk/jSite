@@ -102,19 +102,19 @@ public class KeyDialog extends JDialog {
 	private JTextField publicKeyTextField;
 
 	/** The select box for the projects. */
-	private JComboBox projectsComboBox;
+	private JComboBox<Project> projectsComboBox;
 
 	/** The select box for the own identities. */
-	private JComboBox ownIdentitiesComboBox;
+	private JComboBox<OwnIdentity> ownIdentitiesComboBox;
 
 	/** Whether the dialog was cancelled. */
 	private boolean cancelled;
 
 	/** The list of projects. */
-	private final List<Project> projects = new ArrayList<Project>();
+	private final List<Project> projects = new ArrayList<>();
 
 	/** The list of own identities. */
-	private final List<OwnIdentity> ownIdentities = new ArrayList<OwnIdentity>();
+	private final List<OwnIdentity> ownIdentities = new ArrayList<>();
 
 	/**
 	 * Creates a new key dialog.
@@ -349,7 +349,7 @@ public class KeyDialog extends JDialog {
 		contentPanel.add(projectLabel, new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.LINE_START, GridBagConstraints.NONE, new Insets(12, 18, 0, 0), 0, 0));
 
 		synchronized (projects) {
-			projectsComboBox = new JComboBox(new ComboBoxModelList<Project>(projects));
+			projectsComboBox = new JComboBox<>(new ComboBoxModelList<>(projects));
 		}
 		projectsComboBox.addActionListener(new ActionListener() {
 
@@ -368,7 +368,7 @@ public class KeyDialog extends JDialog {
 		final JLabel identityLabel = new JLabel(I18n.getMessage("jsite.key-dialog.label.identity"));
 		contentPanel.add(identityLabel, new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0, GridBagConstraints.LINE_START, GridBagConstraints.NONE, new Insets(12, 18, 0, 0), 0, 0));
 
-		ownIdentitiesComboBox = new JComboBox(new ComboBoxModelList<OwnIdentity>(ownIdentities));
+		ownIdentitiesComboBox = new JComboBox<>(new ComboBoxModelList<>(ownIdentities));
 		ownIdentitiesComboBox.addActionListener(new ActionListener() {
 
 			@Override
@@ -380,7 +380,7 @@ public class KeyDialog extends JDialog {
 		ownIdentitiesComboBox.setRenderer(new DefaultListCellRenderer() {
 
 			@Override
-			public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+			public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 				super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 				if (value == null) {
 					setText("");

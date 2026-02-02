@@ -526,7 +526,7 @@ public class Main implements ActionListener, ListSelectionListener, WizardListen
 	 */
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
-		JList list = (JList) e.getSource();
+		JList<?> list = (JList<?>) e.getSource();
 		int selectedRow = list.getSelectedIndex();
 		wizard.setNextEnabled(selectedRow > -1);
 	}

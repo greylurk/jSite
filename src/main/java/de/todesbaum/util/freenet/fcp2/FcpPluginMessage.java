@@ -18,9 +18,7 @@
 
 package de.todesbaum.util.freenet.fcp2;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Writer;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,7 +36,7 @@ public class FcpPluginMessage extends Command {
 	private String pluginName;
 
 	/** The parameters to send to the plugin. */
-	private final Map<String, String> parameters = new HashMap<String, String>();
+	private final Map<String, String> parameters = new HashMap<>();
 
 	/**
 	 * Creates a new FCPPluginMessage command.

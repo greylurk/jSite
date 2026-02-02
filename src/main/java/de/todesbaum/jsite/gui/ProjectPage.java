@@ -114,7 +114,7 @@ public class ProjectPage extends TWizardPage implements ListSelectionListener, D
 	private JScrollPane projectScrollPane;
 
 	/** The project list. */
-	private JList projectList;
+	private JList<Project> projectList;
 
 	/** The project name textfield. */
 	private JTextField projectNameTextField;
@@ -164,8 +164,8 @@ public class ProjectPage extends TWizardPage implements ListSelectionListener, D
 		createActions();
 
 		pathChooser = new JFileChooser();
-		projectListModel = new SortedListModel<Project>();
-		projectList = new JList(projectListModel);
+		projectListModel = new SortedListModel<>();
+		projectList = new JList<Project>(projectListModel);
 		projectList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		projectList.addListSelectionListener(this);
 
