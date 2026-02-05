@@ -18,63 +18,25 @@
 
 package de.todesbaum.jsite.gui;
 
-import static java.util.Optional.ofNullable;
-
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.*;
+import java.awt.event.*;
 import java.text.MessageFormat;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Optional;
-import java.util.Set;
+import static java.util.Optional.ofNullable;
+import java.util.*;
 import java.util.function.Consumer;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.WindowConstants;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import javax.swing.text.JTextComponent;
 
-import net.pterodactylus.util.io.MimeTypes;
-import net.pterodactylus.util.swing.SwingUtils;
-import net.pterodactylus.util.thread.StoppableDelay;
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.text.*;
 
 import de.todesbaum.jsite.application.FileOption;
 import de.todesbaum.jsite.application.Project;
 import de.todesbaum.jsite.i18n.I18n;
 import de.todesbaum.jsite.i18n.I18nContainer;
-import de.todesbaum.util.swing.TLabel;
-import de.todesbaum.util.swing.TWizard;
-import de.todesbaum.util.swing.TWizardPage;
+import de.todesbaum.util.swing.*;
+import net.pterodactylus.util.io.MimeTypes;
+import net.pterodactylus.util.swing.SwingUtils;
+import net.pterodactylus.util.thread.StoppableDelay;
 
 /**
  * Wizard page that lets the user manage the files of a project.
@@ -161,7 +123,6 @@ public class ProjectFilesPage extends TWizardPage implements ActionListener, Lis
 		scanAction = new AbstractAction(I18n.getMessage("jsite.project-files.action.rescan")) {
 
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void actionPerformed(ActionEvent actionEvent) {
 				actionScan();
 			}
@@ -169,15 +130,10 @@ public class ProjectFilesPage extends TWizardPage implements ActionListener, Lis
 		scanAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_S);
 		scanAction.putValue(Action.SHORT_DESCRIPTION, I18n.getMessage("jsite.project-files.action.rescan.tooltip"));
 
-		I18nContainer.getInstance().registerRunnable(new Runnable() {
-
-			@Override
-			@SuppressWarnings("synthetic-access")
-			public void run() {
+		I18nContainer.getInstance().registerRunnable(() -> {
 				scanAction.putValue(Action.NAME, I18n.getMessage("jsite.project-files.action.rescan"));
 				scanAction.putValue(Action.SHORT_DESCRIPTION, I18n.getMessage("jsite.project-files.action.rescan.tooltip"));
-			}
-		});
+			});
 	}
 
 	/**
@@ -322,21 +278,13 @@ public class ProjectFilesPage extends TWizardPage implements ActionListener, Lis
 		scanningFilesDialog.pack();
 		scanningFilesDialog.addWindowListener(new WindowAdapter() {
 
-			/**
-			 * {@inheritDoc}
-			 */
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void windowOpened(WindowEvent e) {
 				SwingUtils.center(scanningFilesDialog, wizard);
 			}
 		});
 
-		I18nContainer.getInstance().registerRunnable(new Runnable() {
-
-			@Override
-			@SuppressWarnings("synthetic-access")
-			public void run() {
+		I18nContainer.getInstance().registerRunnable(() -> {
 				alwaysForceInsertCheckBox.setText(I18n.getMessage("jsite.project-files.always-force-insert"));
 				alwaysForceInsertCheckBox.setToolTipText(I18n.getMessage("jsite.project-files.always-force-insert.tooltip"));
 				ignoreHiddenFilesCheckBox.setText(I18n.getMessage("jsite.project-files.ignore-hidden-files"));
@@ -357,8 +305,7 @@ public class ProjectFilesPage extends TWizardPage implements ActionListener, Lis
 				fileOptionsMIMETypeComboBox.setToolTipText(I18n.getMessage("jsite.project-files.mime-type.tooltip"));
 				mimeTypeLabel.setText(I18n.getMessage("jsite.project-files.mime-type") + ":");
 				scanningLabel.setText(I18n.getMessage("jsite.project-files.scanning"));
-			}
-		});
+			});
 
 		return projectFilesPanel;
 	}
@@ -375,14 +322,10 @@ public class ProjectFilesPage extends TWizardPage implements ActionListener, Lis
 		setDescription(I18n.getMessage("jsite.project-files.description"));
 		ignoreHiddenFilesCheckBox.setSelected(project.isIgnoreHiddenFiles());
 		alwaysForceInsertCheckBox.setSelected(project.isAlwaysForceInsert());
-		I18nContainer.getInstance().registerRunnable(new Runnable() {
-
-			@Override
-			public void run() {
+		I18nContainer.getInstance().registerRunnable(() -> {
 				setHeading(MessageFormat.format(I18n.getMessage("jsite.project-files.heading"), project.getName()));
 				setDescription(I18n.getMessage("jsite.project-files.description"));
-			}
-		});
+			});
 	}
 
 	//
@@ -403,38 +346,23 @@ public class ProjectFilesPage extends TWizardPage implements ActionListener, Lis
 		ignoreHiddenFilesCheckBox.setEnabled(false);
 		scanAction.setEnabled(false);
 
-		delayedNotification = new StoppableDelay(new Runnable() {
-
-			@Override
-			@SuppressWarnings("synthetic-access")
-			public void run() {
-				scanningFilesDialog.setVisible(true);
-			}
-		}, new Runnable() {
-
-			@Override
-			@SuppressWarnings("synthetic-access")
-			public void run() {
-				scanningFilesDialog.setVisible(false);
-			}
-		}, 2000);
+		delayedNotification = new StoppableDelay(() -> {
+                    scanningFilesDialog.setVisible(true);
+                }, () -> {
+                    scanningFilesDialog.setVisible(false);
+                }, 2000);
 		fileScanner.startInBackground();
 		new Thread(delayedNotification).start();
-		new Thread(new Runnable() {
-
-			@Override
-			@SuppressWarnings("synthetic-access")
-			public void run() {
-				while (!delayedNotification.isFinished()) {
-					try {
-						Thread.sleep(250);
-					} catch (InterruptedException ie1) {
-						/* ignore. */
-					}
-					progressBar.setString(fileScanner.getLastFilename());
-				}
-			}
-		}).start();
+		new Thread(() -> {
+                    while (!delayedNotification.isFinished()) {
+                        try {
+                            Thread.sleep(250);
+                        } catch (InterruptedException ie1) {
+                            /* ignore. */
+                        }
+                        progressBar.setString(fileScanner.getLastFilename());
+                    }
+                }).start();
 	}
 
 	/**
@@ -446,19 +374,12 @@ public class ProjectFilesPage extends TWizardPage implements ActionListener, Lis
 	public void fileScannerFinished(boolean error, Collection<ScannedFile> files) {
 		delayedNotification.finish();
 		if (!error) {
-			SwingUtilities.invokeLater(new Runnable() {
-
-				@Override
-				@SuppressWarnings("synthetic-access")
-				public void run() {
-					projectFileList.setListData(files.toArray(new ScannedFile[0]));
-					projectFileList.clearSelection();
-				}
-			});
+			SwingUtilities.invokeLater(() -> {
+                            projectFileList.setListData(files.toArray(new ScannedFile[0]));
+                            projectFileList.clearSelection();
+                        });
 			Set<String> entriesToRemove = new HashSet<>();
-			Iterator<String> filenames = new HashSet<>(project.getFileOptions().keySet()).iterator();
-			while (filenames.hasNext()) {
-				String filename = filenames.next();
+			for (String filename : new HashSet<>(project.getFileOptions().keySet())) {
 				boolean found = false;
 				for (ScannedFile scannedFile : files) {
 					if (scannedFile.getFilename().equals(filename)) {
@@ -476,18 +397,13 @@ public class ProjectFilesPage extends TWizardPage implements ActionListener, Lis
 		} else {
 			JOptionPane.showMessageDialog(wizard, I18n.getMessage("jsite.project-files.scan-error"), null, JOptionPane.ERROR_MESSAGE);
 		}
-		SwingUtilities.invokeLater(new Runnable() {
-
-			@Override
-			@SuppressWarnings("synthetic-access")
-			public void run() {
+		SwingUtilities.invokeLater(() -> {
 				wizard.setPreviousEnabled(true);
 				wizard.setNextEnabled(!error);
 				wizard.setQuitEnabled(true);
 				ignoreHiddenFilesCheckBox.setEnabled(true);
 				scanAction.setEnabled(true);
-			}
-		});
+			});
 	}
 
 	private Optional<FileOption> getSelectedFile() {
@@ -505,14 +421,14 @@ public class ProjectFilesPage extends TWizardPage implements ActionListener, Lis
 	@Override
 	public void actionPerformed(ActionEvent actionEvent) {
 		Object source = actionEvent.getSource();
-		if (source instanceof JCheckBox) {
-			String checkboxName = ((JCheckBox) source).getName();
+		if (source instanceof JCheckBox jCheckBox) {
+			String checkboxName = jCheckBox.getName();
 			if ("ignore-hidden-files".equals(checkboxName)) {
-				project.setIgnoreHiddenFiles(((JCheckBox) source).isSelected());
+				project.setIgnoreHiddenFiles(jCheckBox.isSelected());
 				actionScan();
 				return;
 			} else if ("always-force-insert".equals(checkboxName)) {
-				project.setAlwaysForceInsert(((JCheckBox) source).isSelected());
+				project.setAlwaysForceInsert(jCheckBox.isSelected());
 				valueChanged(null);
 				return;
 			}
@@ -523,8 +439,7 @@ public class ProjectFilesPage extends TWizardPage implements ActionListener, Lis
 		}
 		String filename = scannedFile.getFilename();
 		FileOption fileOption = project.getFileOption(filename);
-		if (source instanceof JCheckBox) {
-			JCheckBox checkBox = (JCheckBox) source;
+		if (source instanceof JCheckBox checkBox) {
 			if ("default-file".equals(checkBox.getName())) {
 				if (checkBox.isSelected()) {
 					if (filename.indexOf('/') > -1) {

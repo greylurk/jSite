@@ -18,17 +18,8 @@
 
 package de.todesbaum.jsite.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.ClipboardOwner;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
+import java.awt.*;
+import java.awt.datatransfer.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
@@ -36,39 +27,16 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map.Entry;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.text.AbstractDocument;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import javax.swing.text.DocumentFilter;
+import javax.swing.event.*;
+import javax.swing.text.*;
 
-import net.pterodactylus.util.swing.SortedListModel;
-import de.todesbaum.jsite.application.FileOption;
-import de.todesbaum.jsite.application.Freenet7Interface;
-import de.todesbaum.jsite.application.Project;
-import de.todesbaum.jsite.application.WebOfTrustInterface;
+import de.todesbaum.jsite.application.*;
 import de.todesbaum.jsite.i18n.I18n;
 import de.todesbaum.jsite.i18n.I18nContainer;
-import de.todesbaum.util.swing.TLabel;
-import de.todesbaum.util.swing.TWizard;
-import de.todesbaum.util.swing.TWizardPage;
+import de.todesbaum.util.swing.*;
+import net.pterodactylus.util.swing.SortedListModel;
 
 /**
  * Wizard page that lets the user manage his projects and start inserts.
@@ -147,14 +115,10 @@ public class ProjectPage extends TWizardPage implements ListSelectionListener, D
 		setHeading(I18n.getMessage("jsite.project.heading"));
 		setDescription(I18n.getMessage("jsite.project.description"));
 
-		I18nContainer.getInstance().registerRunnable(new Runnable() {
-
-			@Override
-			public void run() {
+		I18nContainer.getInstance().registerRunnable(() -> {
 				setHeading(I18n.getMessage("jsite.project.heading"));
 				setDescription(I18n.getMessage("jsite.project.description"));
-			}
-		});
+			});
 	}
 
 	/**
@@ -165,7 +129,7 @@ public class ProjectPage extends TWizardPage implements ListSelectionListener, D
 
 		pathChooser = new JFileChooser();
 		projectListModel = new SortedListModel<>();
-		projectList = new JList<Project>(projectListModel);
+		projectList = new JList<>(projectListModel);
 		projectList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		projectList.addListSelectionListener(this);
 
@@ -214,7 +178,6 @@ public class ProjectPage extends TWizardPage implements ListSelectionListener, D
 		projectLocalPathBrowseAction = new AbstractAction(I18n.getMessage("jsite.project.action.browse")) {
 
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void actionPerformed(ActionEvent actionEvent) {
 				actionLocalPathBrowse();
 			}
@@ -226,7 +189,6 @@ public class ProjectPage extends TWizardPage implements ListSelectionListener, D
 		projectAddAction = new AbstractAction(I18n.getMessage("jsite.project.action.add-project")) {
 
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void actionPerformed(ActionEvent actionEvent) {
 				actionAdd();
 			}
@@ -237,7 +199,6 @@ public class ProjectPage extends TWizardPage implements ListSelectionListener, D
 		projectDeleteAction = new AbstractAction(I18n.getMessage("jsite.project.action.delete-project")) {
 
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void actionPerformed(ActionEvent actionEvent) {
 				actionDelete();
 			}
@@ -249,7 +210,6 @@ public class ProjectPage extends TWizardPage implements ListSelectionListener, D
 		projectCloneAction = new AbstractAction(I18n.getMessage("jsite.project.action.clone-project")) {
 
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void actionPerformed(ActionEvent actionEvent) {
 				actionClone();
 			}
@@ -261,7 +221,6 @@ public class ProjectPage extends TWizardPage implements ListSelectionListener, D
 		projectCopyURIAction = new AbstractAction(I18n.getMessage("jsite.project.action.copy-uri")) {
 
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void actionPerformed(ActionEvent actionEvent) {
 				actionCopyURI();
 			}
@@ -273,7 +232,6 @@ public class ProjectPage extends TWizardPage implements ListSelectionListener, D
 		projectManageKeysAction = new AbstractAction(I18n.getMessage("jsite.project.action.manage-keys")) {
 
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void actionPerformed(ActionEvent actionEvent) {
 				actionManageKeys();
 			}
@@ -285,7 +243,6 @@ public class ProjectPage extends TWizardPage implements ListSelectionListener, D
 		projectResetEditionAction = new AbstractAction(I18n.getMessage("jsite.project.action.reset-edition")) {
 
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void actionPerformed(ActionEvent actionEvent) {
 				actionResetEdition();
 			}
@@ -294,28 +251,23 @@ public class ProjectPage extends TWizardPage implements ListSelectionListener, D
 		projectResetEditionAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_R);
 		projectResetEditionAction.setEnabled(false);
 
-		I18nContainer.getInstance().registerRunnable(new Runnable() {
-
-			@Override
-			@SuppressWarnings("synthetic-access")
-			public void run() {
-				projectLocalPathBrowseAction.putValue(Action.NAME, I18n.getMessage("jsite.project.action.browse"));
-				projectLocalPathBrowseAction.putValue(Action.SHORT_DESCRIPTION, I18n.getMessage("jsite.project.action.browse.tooltip"));
-				projectAddAction.putValue(Action.NAME, I18n.getMessage("jsite.project.action.add-project"));
-				projectAddAction.putValue(Action.SHORT_DESCRIPTION, I18n.getMessage("jsite.project.action.add-project.tooltip"));
-				projectDeleteAction.putValue(Action.NAME, I18n.getMessage("jsite.project.action.delete-project"));
-				projectDeleteAction.putValue(Action.SHORT_DESCRIPTION, I18n.getMessage("jsite.project.action.delete-project.tooltip"));
-				projectCloneAction.putValue(Action.NAME, I18n.getMessage("jsite.project.action.clone-project"));
-				projectCloneAction.putValue(Action.SHORT_DESCRIPTION, I18n.getMessage("jsite.project.action.clone-project.tooltip"));
-				projectCopyURIAction.putValue(Action.NAME, I18n.getMessage("jsite.project.action.copy-uri"));
-				projectCopyURIAction.putValue(Action.SHORT_DESCRIPTION, I18n.getMessage("jsite.project.action.copy-uri.tooltip"));
-				projectManageKeysAction.putValue(Action.NAME, I18n.getMessage("jsite.project.action.manage-keys"));
-				projectManageKeysAction.putValue(Action.SHORT_DESCRIPTION, I18n.getMessage("jsite.project.action.manage-keys.tooltip"));
-				projectResetEditionAction.putValue(Action.NAME, I18n.getMessage("jsite.project.action.reset-edition"));
-				projectResetEditionAction.putValue(Action.SHORT_DESCRIPTION, I18n.getMessage("jsite.project.action.reset-edition.tooltip"));
-				pathChooser.setApproveButtonText(I18n.getMessage("jsite.project.action.browse.choose"));
-			}
-		});
+		I18nContainer.getInstance().registerRunnable(() -> {
+                    projectLocalPathBrowseAction.putValue(Action.NAME, I18n.getMessage("jsite.project.action.browse"));
+                    projectLocalPathBrowseAction.putValue(Action.SHORT_DESCRIPTION, I18n.getMessage("jsite.project.action.browse.tooltip"));
+                    projectAddAction.putValue(Action.NAME, I18n.getMessage("jsite.project.action.add-project"));
+                    projectAddAction.putValue(Action.SHORT_DESCRIPTION, I18n.getMessage("jsite.project.action.add-project.tooltip"));
+                    projectDeleteAction.putValue(Action.NAME, I18n.getMessage("jsite.project.action.delete-project"));
+                    projectDeleteAction.putValue(Action.SHORT_DESCRIPTION, I18n.getMessage("jsite.project.action.delete-project.tooltip"));
+                    projectCloneAction.putValue(Action.NAME, I18n.getMessage("jsite.project.action.clone-project"));
+                    projectCloneAction.putValue(Action.SHORT_DESCRIPTION, I18n.getMessage("jsite.project.action.clone-project.tooltip"));
+                    projectCopyURIAction.putValue(Action.NAME, I18n.getMessage("jsite.project.action.copy-uri"));
+                    projectCopyURIAction.putValue(Action.SHORT_DESCRIPTION, I18n.getMessage("jsite.project.action.copy-uri.tooltip"));
+                    projectManageKeysAction.putValue(Action.NAME, I18n.getMessage("jsite.project.action.manage-keys"));
+                    projectManageKeysAction.putValue(Action.SHORT_DESCRIPTION, I18n.getMessage("jsite.project.action.manage-keys.tooltip"));
+                    projectResetEditionAction.putValue(Action.NAME, I18n.getMessage("jsite.project.action.reset-edition"));
+                    projectResetEditionAction.putValue(Action.SHORT_DESCRIPTION, I18n.getMessage("jsite.project.action.reset-edition.tooltip"));
+                    pathChooser.setApproveButtonText(I18n.getMessage("jsite.project.action.browse.choose"));
+                });
 	}
 
 	/**
@@ -377,31 +329,19 @@ public class ProjectPage extends TWizardPage implements ListSelectionListener, D
 		projectPathTextField.getDocument().addDocumentListener(this);
 		((AbstractDocument) projectPathTextField.getDocument()).setDocumentFilter(new DocumentFilter() {
 
-			/**
-			 * {@inheritDoc}
-			 */
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
 				super.insertString(fb, offset, string.replaceAll("/", ""), attr);
 				updateCompleteURI();
 			}
 
-			/**
-			 * {@inheritDoc}
-			 */
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
 				super.replace(fb, offset, length, text.replaceAll("/", ""), attrs);
 				updateCompleteURI();
 			}
 
-			/**
-			 * {@inheritDoc}
-			 */
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
 				super.remove(fb, offset, length);
 				updateCompleteURI();
@@ -420,19 +360,15 @@ public class ProjectPage extends TWizardPage implements ListSelectionListener, D
 		informationTable.add(projectCompleteUriTextField, new GridBagConstraints(1, 6, 1, 1, 1.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(6, 6, 0, 0), 0, 0));
 		informationTable.add(new JButton(projectCopyURIAction), new GridBagConstraints(2, 6, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(6, 6, 0, 0), 0, 0));
 
-		I18nContainer.getInstance().registerRunnable(new Runnable() {
-
-			@Override
-			public void run() {
-				projectInformationLabel.setText("<html><b>" + I18n.getMessage("jsite.project.project.information") + "</b></html>");
-				projectNameLabel.setText(I18n.getMessage("jsite.project.project.name") + ":");
-				projectDescriptionLabel.setText(I18n.getMessage("jsite.project.project.description") + ":");
-				projectLocalPathLabel.setText(I18n.getMessage("jsite.project.project.local-path") + ":");
-				projectAddressLabel.setText("<html><b>" + I18n.getMessage("jsite.project.project.address") + "</b></html>");
-				projectPathLabel.setText(I18n.getMessage("jsite.project.project.path") + ":");
-				projectUriLabel.setText(I18n.getMessage("jsite.project.project.uri") + ":");
-			}
-		});
+		I18nContainer.getInstance().registerRunnable(() -> {
+                    projectInformationLabel.setText("<html><b>" + I18n.getMessage("jsite.project.project.information") + "</b></html>");
+                    projectNameLabel.setText(I18n.getMessage("jsite.project.project.name") + ":");
+                    projectDescriptionLabel.setText(I18n.getMessage("jsite.project.project.description") + ":");
+                    projectLocalPathLabel.setText(I18n.getMessage("jsite.project.project.local-path") + ":");
+                    projectAddressLabel.setText("<html><b>" + I18n.getMessage("jsite.project.project.address") + "</b></html>");
+                    projectPathLabel.setText(I18n.getMessage("jsite.project.project.path") + ":");
+                    projectUriLabel.setText(I18n.getMessage("jsite.project.project.uri") + ":");
+                });
 
 		return informationPanel;
 	}
@@ -555,7 +491,7 @@ public class ProjectPage extends TWizardPage implements ListSelectionListener, D
 	 * Adds a new project.
 	 */
 	private void actionAdd() {
-		String[] keyPair = null;
+		String[] keyPair;
 		if (!freenetInterface.hasNode()) {
 			JOptionPane.showMessageDialog(this, I18n.getMessage("jsite.project-files.no-node-selected"), null, JOptionPane.ERROR_MESSAGE);
 			return;

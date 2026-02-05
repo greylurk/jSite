@@ -19,7 +19,6 @@
 package de.todesbaum.jsite.gui;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -144,14 +143,7 @@ public class FileScanner implements Runnable {
 	 *             if an I/O error occurs
 	 */
 	private void scanFiles(File rootDir, List<ScannedFile> fileList) throws IOException {
-		File[] files = rootDir.listFiles(new FileFilter() {
-
-			@Override
-			@SuppressWarnings("synthetic-access")
-			public boolean accept(File file) {
-				return !project.isIgnoreHiddenFiles() || !file.isHidden();
-			}
-		});
+		File[] files = rootDir.listFiles((File file) -> !project.isIgnoreHiddenFiles() || !file.isHidden());
 		if (files == null) {
 			throw new IOException(I18n.getMessage("jsite.file-scanner.can-not-read-directory"));
 		}

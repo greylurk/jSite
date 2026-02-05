@@ -47,7 +47,6 @@ import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import net.pterodactylus.util.io.StreamCopier.ProgressListener;
 import de.todesbaum.jsite.application.AbortedException;
 import de.todesbaum.jsite.application.Freenet7Interface;
 import de.todesbaum.jsite.application.InsertListener;
@@ -70,7 +69,7 @@ public class ProjectInsertPage extends TWizardPage implements InsertListener, Cl
 	private static final Logger logger = Logger.getLogger(ProjectInsertPage.class.getName());
 
 	/** The project inserter. */
-	private ProjectInserter projectInserter;
+	private final ProjectInserter projectInserter;
 
 	/** The “copy URI” action. */
 	private Action copyURIAction;
@@ -108,14 +107,10 @@ public class ProjectInsertPage extends TWizardPage implements InsertListener, Cl
 		pageInit();
 		setHeading(I18n.getMessage("jsite.insert.heading"));
 		setDescription(I18n.getMessage("jsite.insert.description"));
-		I18nContainer.getInstance().registerRunnable(new Runnable() {
-
-			@Override
-			public void run() {
-				setHeading(I18n.getMessage("jsite.insert.heading"));
-				setDescription(I18n.getMessage("jsite.insert.description"));
-			}
-		});
+		I18nContainer.getInstance().registerRunnable(() -> {
+                    setHeading(I18n.getMessage("jsite.insert.heading"));
+                    setDescription(I18n.getMessage("jsite.insert.description"));
+                });
 		projectInserter = new ProjectInserter();
 		projectInserter.addInsertListener(this);
 	}
@@ -127,7 +122,6 @@ public class ProjectInsertPage extends TWizardPage implements InsertListener, Cl
 		copyURIAction = new AbstractAction(I18n.getMessage("jsite.project.action.copy-uri")) {
 
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void actionPerformed(ActionEvent actionEvent) {
 				actionCopyURI();
 			}
@@ -136,15 +130,10 @@ public class ProjectInsertPage extends TWizardPage implements InsertListener, Cl
 		copyURIAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_U);
 		copyURIAction.setEnabled(false);
 
-		I18nContainer.getInstance().registerRunnable(new Runnable() {
-
-			@Override
-			@SuppressWarnings("synthetic-access")
-			public void run() {
+		I18nContainer.getInstance().registerRunnable(() -> {
 				copyURIAction.putValue(Action.NAME, I18n.getMessage("jsite.project.action.copy-uri"));
 				copyURIAction.putValue(Action.SHORT_DESCRIPTION, I18n.getMessage("jsite.project.action.copy-uri.tooltip"));
-			}
-		});
+			});
 	}
 
 	/**
@@ -185,11 +174,7 @@ public class ProjectInsertPage extends TWizardPage implements InsertListener, Cl
 		projectInsertPanel.add(progressBar, new GridBagConstraints(1, 3, 1, 1, 1.0, 0.0, GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL, new Insets(6, 6, 0, 0), 0, 0));
 		projectInsertPanel.add(new JButton(copyURIAction), new GridBagConstraints(0, 4, 2, 1, 0.0, 0.0, GridBagConstraints.LINE_END, GridBagConstraints.NONE, new Insets(12, 18, 0, 0), 0, 0));
 
-		I18nContainer.getInstance().registerRunnable(new Runnable() {
-
-			@Override
-			@SuppressWarnings("synthetic-access")
-			public void run() {
+		I18nContainer.getInstance().registerRunnable(() -> {
 				projectInformationLabel.setText("<html><b>" + I18n.getMessage("jsite.insert.project-information") + "</b></html>");
 				requestURILabel.setText(I18n.getMessage("jsite.insert.request-uri") + ":");
 				startTimeLeftLabel.setText(I18n.getMessage("jsite.insert.start-time") + ":");
@@ -199,8 +184,7 @@ public class ProjectInsertPage extends TWizardPage implements InsertListener, Cl
 					startTimeLabel.setText("");
 				}
 				progressLabel.setText(I18n.getMessage("jsite.insert.progress") + ":");
-			}
-		});
+			});
 
 		return projectInsertPanel;
 	}
@@ -225,29 +209,17 @@ public class ProjectInsertPage extends TWizardPage implements InsertListener, Cl
 		progressBar.setValue(0);
 		progressBar.setString(I18n.getMessage("jsite.insert.starting"));
 		progressBar.setFont(progressBar.getFont().deriveFont(Font.PLAIN));
-		projectInserter.start(new ProgressListener() {
-
-			@Override
-			public void onProgress(final long copied, final long length) {
-				SwingUtilities.invokeLater(new Runnable() {
-
-					/**
-					 * {@inheritDoc}
-					 */
-					@Override
-					@SuppressWarnings("synthetic-access")
-					public void run() {
-						int divisor = 1;
-						while (((copied / divisor) > Integer.MAX_VALUE) || ((length / divisor) > Integer.MAX_VALUE)) {
-							divisor *= 10;
-						}
-						progressBar.setMaximum((int) (length / divisor));
-						progressBar.setValue((int) (copied / divisor));
-						progressBar.setString("Uploaded: " + copied + " / " + length);
+		projectInserter.start((final long copied, final long length) -> {
+				SwingUtilities.invokeLater(() -> {
+					int divisor = 1;
+					while (((copied / divisor) > Integer.MAX_VALUE) || ((length / divisor) > Integer.MAX_VALUE)) {
+						divisor *= 10;
 					}
+					progressBar.setMaximum((int) (length / divisor));
+					progressBar.setValue((int) (copied / divisor));
+					progressBar.setString("Uploaded: " + copied + " / " + length);
 				});
-			}
-		});
+			});
 	}
 
 	/**
@@ -400,14 +372,14 @@ public class ProjectInsertPage extends TWizardPage implements InsertListener, Cl
 			secondSlash = uri.length();
 		}
 		String editionNumber = uri.substring(slash + 1, secondSlash);
-		logger.log(Level.FINEST, "Extracted edition number: " + editionNumber);
+		logger.log(Level.FINEST, "Extracted edition number: {0}", editionNumber);
 		int edition = -1;
 		try {
-			edition = Integer.valueOf(editionNumber);
+			edition = Integer.parseInt(editionNumber);
 		} catch (NumberFormatException nfe1) {
 			/* ignore. */
 		}
-		logger.log(Level.FINEST, "Insert edition: " + edition + ", Project edition: " + project.getEdition());
+		logger.log(Level.FINEST, "Insert edition: {0}, Project edition: {1}", new Object[]{edition, project.getEdition()});
 		if ((edition != -1) && (edition == project.getEdition())) {
 			JOptionPane.showMessageDialog(this, I18n.getMessage("jsite.insert.reinserted-edition"), I18n.getMessage("jsite.insert.reinserted-edition.title"), JOptionPane.INFORMATION_MESSAGE);
 		}
@@ -419,11 +391,7 @@ public class ProjectInsertPage extends TWizardPage implements InsertListener, Cl
 	@Override
 	public void projectInsertProgress(Project project, final int succeeded, final int failed, final int fatal, final int total, final boolean finalized) {
 		insertedBlocks = succeeded;
-		SwingUtilities.invokeLater(new Runnable() {
-
-			@Override
-			@SuppressWarnings("synthetic-access")
-			public void run() {
+		SwingUtilities.invokeLater(() -> {
 				if (total == 0) {
 					return;
 				}
@@ -440,8 +408,7 @@ public class ProjectInsertPage extends TWizardPage implements InsertListener, Cl
 				if (finalized) {
 					progressBar.setFont(progressBar.getFont().deriveFont(Font.BOLD));
 				}
-			}
-		});
+			});
 	}
 
 	/**
@@ -467,18 +434,13 @@ public class ProjectInsertPage extends TWizardPage implements InsertListener, Cl
 				}
 			}
 		}
-		SwingUtilities.invokeLater(new Runnable() {
-
-			@Override
-			@SuppressWarnings("synthetic-access")
-			public void run() {
+		SwingUtilities.invokeLater(() -> {
 				progressBar.setValue(progressBar.getMaximum());
 				progressBar.setString(I18n.getMessage("jsite.insert.done") + " (" + getTransferRate() + " " + I18n.getMessage("jsite.insert.k-per-s") + ")");
 				wizard.setNextName(I18n.getMessage("jsite.wizard.next"));
 				wizard.setNextEnabled(true);
 				wizard.setQuitEnabled(true);
-			}
-		});
+			});
 	}
 
 	//

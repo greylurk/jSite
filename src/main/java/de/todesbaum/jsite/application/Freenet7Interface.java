@@ -20,11 +20,7 @@ package de.todesbaum.jsite.application;
 
 import java.io.IOException;
 
-import de.todesbaum.util.freenet.fcp2.Client;
-import de.todesbaum.util.freenet.fcp2.Command;
-import de.todesbaum.util.freenet.fcp2.Connection;
-import de.todesbaum.util.freenet.fcp2.GenerateSSK;
-import de.todesbaum.util.freenet.fcp2.Message;
+import de.todesbaum.util.freenet.fcp2.*;
 import de.todesbaum.util.freenet.fcp2.Node;
 
 /**
@@ -33,7 +29,6 @@ import de.todesbaum.util.freenet.fcp2.Node;
  * @author David ‘Bombe’ Roden &lt;bombe@freenetproject.org&gt;
  */
 public class Freenet7Interface {
-
 	/** Random number to differentiate several jSites. */
 	private static final int number = (int) (Math.random() * Integer.MAX_VALUE);
 

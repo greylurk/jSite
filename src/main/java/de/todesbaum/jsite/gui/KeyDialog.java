@@ -18,51 +18,21 @@
 
 package de.todesbaum.jsite.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.*;
+import java.awt.event.*;
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.*;
 import java.util.List;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JSeparator;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 
-import net.pterodactylus.util.swing.ComboBoxModelList;
 import de.todesbaum.jsite.application.Freenet7Interface;
 import de.todesbaum.jsite.application.Project;
 import de.todesbaum.jsite.i18n.I18n;
 import de.todesbaum.jsite.i18n.I18nContainer;
 import de.todesbaum.util.freenet.fcp2.wot.OwnIdentity;
+import net.pterodactylus.util.swing.ComboBoxModelList;
 
 /**
  * A dialog that lets the user edit the private and public key for a project.
@@ -128,9 +98,7 @@ public class KeyDialog extends JDialog {
 		super(parent, I18n.getMessage("jsite.key-dialog.title"), true);
 		this.freenetInterface = freenetInterface;
 		addWindowListener(new WindowAdapter() {
-
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void windowClosing(WindowEvent windowEvent) {
 				actionCancel();
 			}
@@ -217,13 +185,7 @@ public class KeyDialog extends JDialog {
 		synchronized (this.ownIdentities) {
 			this.ownIdentities.clear();
 			this.ownIdentities.addAll(ownIdentities);
-			Collections.sort(this.ownIdentities, new Comparator<OwnIdentity>() {
-
-				@Override
-				public int compare(OwnIdentity leftOwnIdentity, OwnIdentity rightOwnIdentity) {
-					return leftOwnIdentity.getNickname().compareToIgnoreCase(rightOwnIdentity.getNickname());
-				}
-			});
+			Collections.sort(this.ownIdentities, (OwnIdentity leftOwnIdentity, OwnIdentity rightOwnIdentity) -> leftOwnIdentity.getNickname().compareToIgnoreCase(rightOwnIdentity.getNickname()));
 		}
 		int selectedIndex = -1;
 		int index = 0;
@@ -261,7 +223,6 @@ public class KeyDialog extends JDialog {
 		okAction = new AbstractAction(I18n.getMessage("jsite.general.ok")) {
 
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void actionPerformed(ActionEvent actionEvent) {
 				actionOk();
 			}
@@ -272,7 +233,6 @@ public class KeyDialog extends JDialog {
 		cancelAction = new AbstractAction(I18n.getMessage("jsite.general.cancel")) {
 
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void actionPerformed(ActionEvent actionEvent) {
 				actionCancel();
 			}
@@ -283,7 +243,6 @@ public class KeyDialog extends JDialog {
 		copyFromProjectAction = new AbstractAction(I18n.getMessage("jsite.key-dialog.button.copy-from-project")) {
 
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void actionPerformed(ActionEvent actionevent) {
 				actionCopyFromProject();
 			}
@@ -295,7 +254,6 @@ public class KeyDialog extends JDialog {
 		copyFromIdentityAction = new AbstractAction(I18n.getMessage("jsite.key-dialog.button.copy-from-identity")) {
 
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void actionPerformed(ActionEvent actionevent) {
 				actionCopyFromIdentity();
 			}
@@ -307,7 +265,6 @@ public class KeyDialog extends JDialog {
 		generateAction = new AbstractAction(I18n.getMessage("jsite.key-dialog.button.generate")) {
 
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void actionPerformed(ActionEvent actionEvent) {
 				actionGenerate();
 			}
@@ -351,15 +308,9 @@ public class KeyDialog extends JDialog {
 		synchronized (projects) {
 			projectsComboBox = new JComboBox<>(new ComboBoxModelList<>(projects));
 		}
-		projectsComboBox.addActionListener(new ActionListener() {
-
-			@Override
-			@SuppressWarnings("synthetic-access")
-			public void actionPerformed(ActionEvent actionEvent) {
-				copyFromProjectAction.setEnabled(projectsComboBox.getSelectedIndex() > -1);
-			}
-
-		});
+		projectsComboBox.addActionListener((ActionEvent actionEvent) -> {
+                    copyFromProjectAction.setEnabled(projectsComboBox.getSelectedIndex() > -1);
+                });
 		contentPanel.add(projectsComboBox, new GridBagConstraints(1, 4, 1, 1, 1.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(6, 12, 0, 0), 0, 0));
 
 		JButton copyFromProjectButton = new JButton(copyFromProjectAction);
@@ -369,14 +320,9 @@ public class KeyDialog extends JDialog {
 		contentPanel.add(identityLabel, new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0, GridBagConstraints.LINE_START, GridBagConstraints.NONE, new Insets(12, 18, 0, 0), 0, 0));
 
 		ownIdentitiesComboBox = new JComboBox<>(new ComboBoxModelList<>(ownIdentities));
-		ownIdentitiesComboBox.addActionListener(new ActionListener() {
-
-			@Override
-			@SuppressWarnings("synthetic-access")
-			public void actionPerformed(ActionEvent actionevent) {
-				copyFromIdentityAction.setEnabled(ownIdentitiesComboBox.getSelectedIndex() > -1);
-			}
-		});
+		ownIdentitiesComboBox.addActionListener((ActionEvent actionevent) -> {
+                    copyFromIdentityAction.setEnabled(ownIdentitiesComboBox.getSelectedIndex() > -1);
+                });
 		ownIdentitiesComboBox.setRenderer(new DefaultListCellRenderer() {
 
 			@Override
@@ -415,19 +361,15 @@ public class KeyDialog extends JDialog {
 		buttonPanel.add(new JButton(okAction));
 		buttonPanel.add(new JButton(cancelAction));
 
-		I18nContainer.getInstance().registerRunnable(new Runnable() {
-
-			@Override
-			public void run() {
-				keysLabel.setText(I18n.getMessage("jsite.key-dialog.label.keys"));
-				privateKeyLabel.setText(I18n.getMessage("jsite.key-dialog.label.private-key"));
-				publicKeyLabel.setText(I18n.getMessage("jsite.key-dialog.label.public-key"));
-				copyKeysLabel.setText(I18n.getMessage("jsite.key-dialog.label.copy-keys"));
-				identityLabel.setText(I18n.getMessage("jsite.key-dialog.label.identity"));
-				projectLabel.setText(I18n.getMessage("jsite.key-dialog.label.project"));
-				actionsLabel.setText(I18n.getMessage("jsite.key-dialog.label.actions"));
-			}
-		});
+		I18nContainer.getInstance().registerRunnable(() -> {
+                    keysLabel.setText(I18n.getMessage("jsite.key-dialog.label.keys"));
+                    privateKeyLabel.setText(I18n.getMessage("jsite.key-dialog.label.private-key"));
+                    publicKeyLabel.setText(I18n.getMessage("jsite.key-dialog.label.public-key"));
+                    copyKeysLabel.setText(I18n.getMessage("jsite.key-dialog.label.copy-keys"));
+                    identityLabel.setText(I18n.getMessage("jsite.key-dialog.label.identity"));
+                    projectLabel.setText(I18n.getMessage("jsite.key-dialog.label.project"));
+                    actionsLabel.setText(I18n.getMessage("jsite.key-dialog.label.actions"));
+                });
 
 		getContentPane().add(dialogPanel, BorderLayout.CENTER);
 		pack();
@@ -487,7 +429,7 @@ public class KeyDialog extends JDialog {
 		if (JOptionPane.showConfirmDialog(this, I18n.getMessage("jsite.project.warning.generate-new-key"), null, JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION) {
 			return;
 		}
-		String[] keyPair = null;
+		String[] keyPair;
 		try {
 			keyPair = freenetInterface.generateKeyPair();
 		} catch (IOException ioe1) {

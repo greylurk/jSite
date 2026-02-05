@@ -18,46 +18,22 @@
 
 package de.todesbaum.jsite.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import javax.swing.SpinnerNumberModel;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.event.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
 import de.todesbaum.jsite.application.Node;
 import de.todesbaum.jsite.i18n.I18n;
 import de.todesbaum.jsite.i18n.I18nContainer;
-import de.todesbaum.util.swing.TLabel;
-import de.todesbaum.util.swing.TWizard;
-import de.todesbaum.util.swing.TWizardPage;
+import de.todesbaum.util.swing.*;
 
 /**
  * Wizard page that lets the user edit his nodes.
@@ -67,7 +43,7 @@ import de.todesbaum.util.swing.TWizardPage;
 public class NodeManagerPage extends TWizardPage implements ListSelectionListener, DocumentListener, ChangeListener {
 
 	/** List of node manager listeners. */
-	private List<NodeManagerListener> nodeManagerListeners = new ArrayList<NodeManagerListener>();
+	private final List<NodeManagerListener> nodeManagerListeners = new ArrayList<>();
 
 	/** The “add node” action. */
 	protected Action addNodeAction;
@@ -76,10 +52,10 @@ public class NodeManagerPage extends TWizardPage implements ListSelectionListene
 	protected Action deleteNodeAction;
 
 	/** The node list model. */
-	private DefaultListModel nodeListModel;
+	private DefaultListModel<Node> nodeListModel;
 
 	/** The node list. */
-	private JList nodeList;
+	private JList<Node> nodeList;
 
 	/** The node name textfield. */
 	private JTextField nodeNameTextField;
@@ -101,14 +77,10 @@ public class NodeManagerPage extends TWizardPage implements ListSelectionListene
 		pageInit();
 		setHeading(I18n.getMessage("jsite.node-manager.heading"));
 		setDescription(I18n.getMessage("jsite.node-manager.description"));
-		I18nContainer.getInstance().registerRunnable(new Runnable() {
-
-			@Override
-			public void run() {
-				setHeading(I18n.getMessage("jsite.node-manager.heading"));
-				setDescription(I18n.getMessage("jsite.node-manager.description"));
-			}
-		});
+		I18nContainer.getInstance().registerRunnable(() -> {
+                    setHeading(I18n.getMessage("jsite.node-manager.heading"));
+                    setDescription(I18n.getMessage("jsite.node-manager.description"));
+                });
 	}
 
 	/**
@@ -162,7 +134,6 @@ public class NodeManagerPage extends TWizardPage implements ListSelectionListene
 		addNodeAction = new AbstractAction(I18n.getMessage("jsite.node-manager.add-node")) {
 
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void actionPerformed(ActionEvent actionEvent) {
 				addNode();
 			}
@@ -171,21 +142,16 @@ public class NodeManagerPage extends TWizardPage implements ListSelectionListene
 		deleteNodeAction = new AbstractAction(I18n.getMessage("jsite.node-manager.delete-node")) {
 
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void actionPerformed(ActionEvent actionEvent) {
 				deleteNode();
 			}
 		};
 		deleteNodeAction.setEnabled(false);
 
-		I18nContainer.getInstance().registerRunnable(new Runnable() {
-
-			@Override
-			public void run() {
-				addNodeAction.putValue(Action.NAME, I18n.getMessage("jsite.node-manager.add-node"));
-				deleteNodeAction.putValue(Action.NAME, I18n.getMessage("jsite.node-manager.delete-node"));
-			}
-		});
+		I18nContainer.getInstance().registerRunnable(() -> {
+                    addNodeAction.putValue(Action.NAME, I18n.getMessage("jsite.node-manager.add-node"));
+                    deleteNodeAction.putValue(Action.NAME, I18n.getMessage("jsite.node-manager.delete-node"));
+                });
 	}
 
 	/**
@@ -193,8 +159,8 @@ public class NodeManagerPage extends TWizardPage implements ListSelectionListene
 	 */
 	private void pageInit() {
 		createActions();
-		nodeListModel = new DefaultListModel();
-		nodeList = new JList(nodeListModel);
+		nodeListModel = new DefaultListModel<>();
+		nodeList = new JList<>(nodeListModel);
 		nodeList.setName("node-list");
 		nodeList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		nodeList.addListSelectionListener(this);
@@ -241,16 +207,12 @@ public class NodeManagerPage extends TWizardPage implements ListSelectionListene
         add(nodeListScrollPane, BorderLayout.LINE_START);
 		add(centerPanel, BorderLayout.CENTER);
 
-		I18nContainer.getInstance().registerRunnable(new Runnable() {
-
-			@Override
-			public void run() {
-				nodeInformationLabel.setText("<html><b>" + I18n.getMessage("jsite.node-manager.node-information") + "</b></html>");
-				nodeNameLabel.setText(I18n.getMessage("jsite.node-manager.name") + ":");
-				nodeHostnameLabel.setText(I18n.getMessage("jsite.node-manager.hostname") + ":");
-				nodePortLabel.setText(I18n.getMessage("jsite.node-manager.port") + ":");
-			}
-		});
+		I18nContainer.getInstance().registerRunnable(() -> {
+                    nodeInformationLabel.setText("<html><b>" + I18n.getMessage("jsite.node-manager.node-information") + "</b></html>");
+                    nodeNameLabel.setText(I18n.getMessage("jsite.node-manager.name") + ":");
+                    nodeHostnameLabel.setText(I18n.getMessage("jsite.node-manager.hostname") + ":");
+                    nodePortLabel.setText(I18n.getMessage("jsite.node-manager.port") + ":");
+                });
 	}
 
 	/**
@@ -382,11 +344,10 @@ public class NodeManagerPage extends TWizardPage implements ListSelectionListene
 	 * {@inheritDoc}
 	 */
 	@Override
-	@SuppressWarnings("null")
 	public void valueChanged(ListSelectionEvent e) {
 		Object source = e.getSource();
 		if (source instanceof JList) {
-			JList sourceList = (JList) source;
+			JList<?> sourceList = (JList<?>) source;
 			if ("node-list".equals(sourceList.getName())) {
 				Node node = (Node) sourceList.getSelectedValue();
 				boolean enabled = (node != null);
@@ -449,8 +410,7 @@ public class NodeManagerPage extends TWizardPage implements ListSelectionListene
 		if (selectedNode == null) {
 			return;
 		}
-		if (source instanceof JSpinner) {
-			JSpinner sourceSpinner = (JSpinner) source;
+		if (source instanceof JSpinner sourceSpinner) {
 			if ("node-port".equals(sourceSpinner.getName())) {
 				selectedNode.setPort((Integer) sourceSpinner.getValue());
 				fireNodeSelected(selectedNode);

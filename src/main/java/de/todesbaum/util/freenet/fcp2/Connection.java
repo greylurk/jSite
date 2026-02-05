@@ -18,23 +18,19 @@
 
 package de.todesbaum.util.freenet.fcp2;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.*;
 import java.net.Socket;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import de.todesbaum.util.io.LineInputStream;
+import de.todesbaum.util.io.TempFileInputStream;
 import net.pterodactylus.util.io.Closer;
 import net.pterodactylus.util.io.StreamCopier;
 import net.pterodactylus.util.io.StreamCopier.ProgressListener;
-import de.todesbaum.util.io.LineInputStream;
-import de.todesbaum.util.io.TempFileInputStream;
 
 /**
  * A physical connection to a Freenet node.
@@ -43,9 +39,10 @@ import de.todesbaum.util.io.TempFileInputStream;
  * @version $Id$
  */
 public class Connection {
+	private final static Logger logger = Logger.getLogger(Connection.class.getName());
 
 	/** The listeners that receive events from this connection. */
-	private List<ConnectionListener> connectionListeners = new ArrayList<ConnectionListener>();
+	private final List<ConnectionListener> connectionListeners = new ArrayList<>();
 
 	/** The node this connection is connected to. */
 	private final Node node;
@@ -287,8 +284,7 @@ public class Connection {
 	private class NodeReader implements Runnable {
 
 		/** The input stream to read from. */
-		@SuppressWarnings("hiding")
-		private InputStream nodeInputStream;
+		private final InputStream nodeInputStream;
 
 		/**
 		 * Creates a new reader that reads from the specified input stream.
@@ -304,14 +300,14 @@ public class Connection {
 		 * Main loop of the reader. Lines are read and converted into
 		 * {@link Message} objects.
 		 */
-		@SuppressWarnings("synthetic-access")
+		@Override
 		public void run() {
 			LineInputStream nodeReader = null;
 			try {
 				nodeReader = new LineInputStream(nodeInputStream);
-				String line = "";
+				String line; 
 				Message message = null;
-				while (line != null) {
+				while (true) {
 					line = nodeReader.readLine();
 					// System.err.println("> " + line);
 					if (line == null) {
@@ -323,17 +319,17 @@ public class Connection {
 					}
 					if ("Data".equals(line)) {
 						/* need to read message from stream now */
-						File tempFile = null;
 						try {
-							tempFile = File.createTempFile("fcpv2", "data", (tempDirectory != null) ? new File(tempDirectory) : null);
+							File tempDirectoryFile = (tempDirectory != null) ? new File(tempDirectory) : null;
+							File tempFile = File.createTempFile("fcpv2", "data", tempDirectoryFile);
 							tempFile.deleteOnExit();
-							FileOutputStream tempFileOutputStream = new FileOutputStream(tempFile);
-							long dataLength = Long.parseLong(message.get("DataLength"));
-							StreamCopier.copy(nodeInputStream, tempFileOutputStream, dataLength);
-							tempFileOutputStream.close();
+							try (FileOutputStream tempFileOutputStream = new FileOutputStream(tempFile)) {
+								long dataLength = Long.parseLong(message.get("DataLength"));
+								StreamCopier.copy(nodeInputStream, tempFileOutputStream, dataLength);
+							}
 							message.setPayloadInputStream(new TempFileInputStream(tempFile));
 						} catch (IOException ioe1) {
-							ioe1.printStackTrace();
+							logger.log(Level.SEVERE, "Error reading data payload", ioe1);
 						}
 					}
 					if ("Data".equals(line) || "EndMessage".equals(line)) {
@@ -367,7 +363,7 @@ public class Connection {
 					throw new IOException("Unexpected line: " + line);
 				}
 			} catch (IOException ioe1) {
-				// ioe1.printStackTrace();
+				logger.log(Level.ALL, "Failed reading node", ioe1);
 			} finally {
 				if (nodeReader != null) {
 					try {

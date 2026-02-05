@@ -23,53 +23,22 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.*;
+import java.util.logging.*;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ButtonGroup;
-import javax.swing.Icon;
-import javax.swing.JList;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButtonMenuItem;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import net.pterodactylus.util.image.IconLoader;
-
-import de.todesbaum.jsite.application.Freenet7Interface;
-import de.todesbaum.jsite.application.Node;
-import de.todesbaum.jsite.application.Project;
-import de.todesbaum.jsite.application.UpdateChecker;
-import de.todesbaum.jsite.application.UpdateListener;
-import de.todesbaum.jsite.application.WebOfTrustInterface;
-import de.todesbaum.jsite.application.validation.CheckReport;
-import de.todesbaum.jsite.application.validation.Issue;
-import de.todesbaum.jsite.application.validation.ProjectValidator;
-import de.todesbaum.jsite.gui.NodeManagerListener;
-import de.todesbaum.jsite.gui.NodeManagerPage;
-import de.todesbaum.jsite.gui.PreferencesPage;
-import de.todesbaum.jsite.gui.ProjectFilesPage;
-import de.todesbaum.jsite.gui.ProjectInsertPage;
-import de.todesbaum.jsite.gui.ProjectPage;
+import de.todesbaum.jsite.application.*;
+import de.todesbaum.jsite.application.validation.*;
+import de.todesbaum.jsite.gui.*;
 import de.todesbaum.jsite.i18n.I18n;
 import de.todesbaum.jsite.i18n.I18nContainer;
 import de.todesbaum.jsite.main.ConfigurationLocator.ConfigurationLocation;
 import de.todesbaum.jsite.main.JarFileLocator.DefaultJarFileLocator;
-import de.todesbaum.util.swing.TWizard;
-import de.todesbaum.util.swing.TWizardPage;
-import de.todesbaum.util.swing.WizardListener;
+import de.todesbaum.util.swing.*;
+import net.pterodactylus.util.image.IconLoader;
 
 /**
  * The main class that ties together everything.
@@ -88,7 +57,7 @@ public class Main implements ActionListener, ListSelectionListener, WizardListen
 	private Configuration configuration;
 
 	/** The freenet interface. */
-	private Freenet7Interface freenetInterface = new Freenet7Interface();
+	private final Freenet7Interface freenetInterface = new Freenet7Interface();
 
 	/** The update checker. */
 	private final UpdateChecker updateChecker;
@@ -135,7 +104,7 @@ public class Main implements ActionListener, ListSelectionListener, WizardListen
 	};
 
 	/** The actions that switch the language. */
-	private Map<Locale, Action> languageActions = new HashMap<Locale, Action>();
+	private final Map<Locale, Action> languageActions = new HashMap<>();
 
 	/** The “manage nodes” action. */
 	private Action manageNodeAction;
@@ -159,7 +128,7 @@ public class Main implements ActionListener, ListSelectionListener, WizardListen
 	private Node selectedNode;
 
 	/** Mapping from page type to page. */
-	private final Map<PageType, TWizardPage> pages = new HashMap<PageType, TWizardPage>();
+	private final Map<PageType, TWizardPage> pages = new EnumMap<>(PageType.class);
 
 	/** The original location of the configuration file. */
 	private ConfigurationLocation originalLocation;
@@ -185,7 +154,7 @@ public class Main implements ActionListener, ListSelectionListener, WizardListen
 		}
 
 		originalLocation = configurationLocator.findPreferredLocation();
-		logger.log(Level.CONFIG, "Using configuration from " + originalLocation + ".");
+		logger.log(Level.CONFIG, "Using configuration from {}." , originalLocation);
 		configuration = new Configuration(configurationLocator, originalLocation);
 
 		Locale.setDefault(configuration.getLocale());
@@ -218,7 +187,6 @@ public class Main implements ActionListener, ListSelectionListener, WizardListen
 			languageActions.put(locale, new AbstractAction(I18n.getMessage("jsite.menu.language." + locale.getLanguage()), IconLoader.loadIcon("/flag-" + locale.getLanguage() + ".png")) {
 
 				@Override
-				@SuppressWarnings("synthetic-access")
 				public void actionPerformed(ActionEvent actionEvent) {
 					switchLanguage(locale);
 				}
@@ -227,7 +195,6 @@ public class Main implements ActionListener, ListSelectionListener, WizardListen
 		manageNodeAction = new AbstractAction(I18n.getMessage("jsite.menu.nodes.manage-nodes")) {
 
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void actionPerformed(ActionEvent actionEvent) {
 				showPage(PageType.PAGE_NODE_MANAGER);
 				optionsPreferencesAction.setEnabled(true);
@@ -241,7 +208,6 @@ public class Main implements ActionListener, ListSelectionListener, WizardListen
 			 * {@inheritDoc}
 			 */
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void actionPerformed(ActionEvent actionEvent) {
 				optionsPreferences();
 			}
@@ -252,7 +218,6 @@ public class Main implements ActionListener, ListSelectionListener, WizardListen
 			 * {@inheritDoc}
 			 */
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void actionPerformed(ActionEvent actionEvent) {
 				showLatestUpdate();
 			}
@@ -260,23 +225,17 @@ public class Main implements ActionListener, ListSelectionListener, WizardListen
 		aboutAction = new AbstractAction(I18n.getMessage("jsite.menu.help.about")) {
 
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void actionPerformed(ActionEvent e) {
 				JOptionPane.showMessageDialog(wizard, MessageFormat.format(I18n.getMessage("jsite.about.message"), getVersion().toString()), null, JOptionPane.INFORMATION_MESSAGE, jSiteIcon);
 			}
 		};
 
-		I18nContainer.getInstance().registerRunnable(new Runnable() {
-
-			@Override
-			@SuppressWarnings("synthetic-access")
-			public void run() {
+		I18nContainer.getInstance().registerRunnable(() -> {
 				manageNodeAction.putValue(Action.NAME, I18n.getMessage("jsite.menu.nodes.manage-nodes"));
 				optionsPreferencesAction.putValue(Action.NAME, I18n.getMessage("jsite.menu.options.preferences"));
 				checkForUpdatesAction.putValue(Action.NAME, I18n.getMessage("jsite.menu.help.check-for-updates"));
 				aboutAction.putValue(Action.NAME, I18n.getMessage("jsite.menu.help.about"));
-			}
-		});
+			});
 	}
 
 	/**
@@ -318,11 +277,7 @@ public class Main implements ActionListener, ListSelectionListener, WizardListen
 		helpMenu.add(checkForUpdatesAction);
 		helpMenu.add(aboutAction);
 
-		I18nContainer.getInstance().registerRunnable(new Runnable() {
-
-			@Override
-			@SuppressWarnings("synthetic-access")
-			public void run() {
+		I18nContainer.getInstance().registerRunnable(() -> {
 				languageMenu.setText(I18n.getMessage("jsite.menu.languages"));
 				nodeMenu.setText(I18n.getMessage("jsite.menu.nodes"));
 				optionsMenu.setText(I18n.getMessage("jsite.menu.options"));
@@ -330,8 +285,7 @@ public class Main implements ActionListener, ListSelectionListener, WizardListen
 				for (Map.Entry<Locale, Action> languageActionEntry : languageActions.entrySet()) {
 					languageActionEntry.getValue().putValue(Action.NAME, I18n.getMessage("jsite.menu.language." + languageActionEntry.getKey().getLanguage()));
 				}
-			}
-		});
+			});
 
 		return menuBar;
 	}
@@ -696,9 +650,9 @@ public class Main implements ActionListener, ListSelectionListener, WizardListen
 	@Override
 	public void nodeSelected(Node node) {
 		for (Component menuItem : nodeMenu.getMenuComponents()) {
-			if (menuItem instanceof JMenuItem) {
-				if (node.equals(((JMenuItem) menuItem).getClientProperty("Node"))) {
-					((JMenuItem) menuItem).setSelected(true);
+			if (menuItem instanceof JMenuItem jMenuItem) {
+				if (node.equals((jMenuItem).getClientProperty("Node"))) {
+					jMenuItem.setSelected(true);
 				}
 			}
 		}
@@ -716,8 +670,7 @@ public class Main implements ActionListener, ListSelectionListener, WizardListen
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
-		if (source instanceof JRadioButtonMenuItem) {
-			JRadioButtonMenuItem menuItem = (JRadioButtonMenuItem) source;
+		if (source instanceof JRadioButtonMenuItem menuItem) {
 			Node node = (Node) menuItem.getClientProperty("Node");
 			selectedNode = node;
 			freenetInterface.setNode(selectedNode);

@@ -18,24 +18,10 @@
 
 package de.todesbaum.jsite.gui;
 
-import java.awt.BorderLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 import de.todesbaum.jsite.i18n.I18n;
 import de.todesbaum.jsite.i18n.I18nContainer;
@@ -122,17 +108,10 @@ public class PreferencesPage extends TWizardPage {
 		pageInit();
 		setHeading(I18n.getMessage("jsite.preferences.heading"));
 		setDescription(I18n.getMessage("jsite.preferences.description"));
-		I18nContainer.getInstance().registerRunnable(new Runnable() {
-
-			/**
-			 * {@inheritDoc}
-			 */
-			@Override
-			public void run() {
+		I18nContainer.getInstance().registerRunnable(() -> {
 				setHeading(I18n.getMessage("jsite.preferences.heading"));
 				setDescription(I18n.getMessage("jsite.preferences.description"));
-			}
-		});
+			});
 	}
 
 	//
@@ -292,22 +271,14 @@ public class PreferencesPage extends TWizardPage {
 	private void createActions() {
 		selectDefaultTempDirectoryAction = new AbstractAction(I18n.getMessage("jsite.preferences.temp-directory.default")) {
 
-			/**
-			 * {@inheritDoc}
-			 */
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void actionPerformed(ActionEvent actionEvent) {
 				selectDefaultTempDirectory();
 			}
 		};
 		selectCustomTempDirectoryAction = new AbstractAction(I18n.getMessage("jsite.preferences.temp-directory.custom")) {
 
-			/**
-			 * {@inheritDoc}
-			 */
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void actionPerformed(ActionEvent actionEvent) {
 				selectCustomTempDirectory();
 			}
@@ -315,7 +286,6 @@ public class PreferencesPage extends TWizardPage {
 		chooseTempDirectoryAction = new AbstractAction(I18n.getMessage("jsite.preferences.temp-directory.choose")) {
 
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void actionPerformed(ActionEvent e) {
 				chooseTempDirectory();
 			}
@@ -323,7 +293,6 @@ public class PreferencesPage extends TWizardPage {
 		nextToJarFileAction = new AbstractAction(I18n.getMessage("jsite.preferences.config-directory.jar")) {
 
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void actionPerformed(ActionEvent actionevent) {
 				configurationLocation = ConfigurationLocation.NEXT_TO_JAR_FILE;
 			}
@@ -331,7 +300,6 @@ public class PreferencesPage extends TWizardPage {
 		homeDirectoryAction = new AbstractAction(I18n.getMessage("jsite.preferences.config-directory.home")) {
 
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void actionPerformed(ActionEvent actionevent) {
 				configurationLocation = ConfigurationLocation.HOME_DIRECTORY;
 			}
@@ -339,7 +307,6 @@ public class PreferencesPage extends TWizardPage {
 		customDirectoryAction = new AbstractAction(I18n.getMessage("jsite.preferences.config-directory.custom")) {
 
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void actionPerformed(ActionEvent actionEvent) {
 				configurationLocation = ConfigurationLocation.CUSTOM;
 			}
@@ -347,7 +314,6 @@ public class PreferencesPage extends TWizardPage {
 		useEarlyEncodeAction = new AbstractAction(I18n.getMessage("jsite.preferences.insert-options.use-early-encode")) {
 
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void actionPerformed(ActionEvent actionEvent) {
 				useEarlyEncode = useEarlyEncodeCheckBox.isSelected();
 			}
@@ -355,17 +321,12 @@ public class PreferencesPage extends TWizardPage {
 		priorityAction = new AbstractAction(I18n.getMessage("jsite.preferences.insert-options.priority")) {
 
 			@Override
-			@SuppressWarnings("synthetic-access")
 			public void actionPerformed(ActionEvent actionEvent) {
 				priority = (PriorityClass) insertPriorityComboBox.getSelectedItem();
 			}
 		};
 
-		I18nContainer.getInstance().registerRunnable(new Runnable() {
-
-			@Override
-			@SuppressWarnings("synthetic-access")
-			public void run() {
+		I18nContainer.getInstance().registerRunnable(() -> {
 				selectDefaultTempDirectoryAction.putValue(Action.NAME, I18n.getMessage("jsite.preferences.temp-directory.default"));
 				selectCustomTempDirectoryAction.putValue(Action.NAME, I18n.getMessage("jsite.preferences.temp-directory.custom"));
 				chooseTempDirectoryAction.putValue(Action.NAME, I18n.getMessage("jsite.preferences.temp-directory.choose"));
@@ -373,8 +334,7 @@ public class PreferencesPage extends TWizardPage {
 				homeDirectoryAction.putValue(Action.NAME, I18n.getMessage("jsite.preferences.config-directory.home"));
 				customDirectoryAction.putValue(Action.NAME, I18n.getMessage("jsite.preferences.config-directory.custom"));
 				useEarlyEncodeAction.putValue(Action.NAME, I18n.getMessage("jsite.preferences.insert-options.use-early-encode"));
-			}
-		});
+			});
 	}
 
 	/**
@@ -443,19 +403,12 @@ public class PreferencesPage extends TWizardPage {
 		insertPriorityComboBox.setAction(priorityAction);
 		preferencesPanel.add(insertPriorityComboBox, new GridBagConstraints(1, 9, 2, 1, 1.0, 0.0, GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL, new Insets(0, 18, 0, 0), 0, 0));
 
-		I18nContainer.getInstance().registerRunnable(new Runnable() {
-
-			/**
-			 * {@inheritDoc}
-			 */
-			@Override
-			public void run() {
+		I18nContainer.getInstance().registerRunnable(() -> {
 				tempDirectoryLabel.setText("<html><b>" + I18n.getMessage("jsite.preferences.temp-directory") + "</b></html>");
 				configurationDirectoryLabel.setText("<html><b>" + I18n.getMessage("jsite.preferences.config-directory") + "</b></html>");
 				insertOptionsLabel.setText("<html><b>" + I18n.getMessage("jsite.preferences.insert-options") + "</b></html>");
 				insertPriorityLabel.setText(I18n.getMessage("jsite.preferences.insert-options.priority"));
-			}
-		});
+			});
 
 		return preferencesPanel;
 	}

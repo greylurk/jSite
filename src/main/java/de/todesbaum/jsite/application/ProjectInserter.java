@@ -18,32 +18,15 @@
 
 package de.todesbaum.jsite.application;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.io.*;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import de.todesbaum.jsite.gui.*;
+import de.todesbaum.util.freenet.fcp2.*;
 import net.pterodactylus.util.io.StreamCopier.ProgressListener;
-
-import de.todesbaum.jsite.gui.FileScanner;
-import de.todesbaum.jsite.gui.ScannedFile;
-import de.todesbaum.jsite.gui.FileScannerListener;
-import de.todesbaum.util.freenet.fcp2.Client;
-import de.todesbaum.util.freenet.fcp2.ClientPutComplexDir;
-import de.todesbaum.util.freenet.fcp2.Connection;
-import de.todesbaum.util.freenet.fcp2.DirectFileEntry;
-import de.todesbaum.util.freenet.fcp2.FileEntry;
-import de.todesbaum.util.freenet.fcp2.Message;
-import de.todesbaum.util.freenet.fcp2.PriorityClass;
-import de.todesbaum.util.freenet.fcp2.RedirectFileEntry;
-import de.todesbaum.util.freenet.fcp2.Verbosity;
 
 /**
  * Manages project inserts.
@@ -292,7 +275,7 @@ public class ProjectInserter implements FileScannerListener, Runnable {
 		while (!finished && !cancelled) {
 			Message message = client.readMessage();
 			finished = (message == null) || (disconnected = client.isDisconnected());
-			logger.log(Level.FINE, "Received message: " + message);
+			logger.log(Level.FINE, "Received message: {0}", message);
 			if (!finished) {
 				@SuppressWarnings("null")
 				String messageName = message.getName();
